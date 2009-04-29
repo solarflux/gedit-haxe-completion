@@ -20,7 +20,8 @@ import keybindingwidget
 import configuration
 
 TEXT_KEYBINDING = "Keybinding:"
-TEXT_TITLE = "Configure python code completion"
+TEXT_TITLE = "Configure haXe code completion"
+TEXT_HXMLFILE = "hxml file:"
 DEFAULT_WINDOW_WIDTH = 370
 DEFAULT_WINDOW_HEIGHT = 0
 LOG_NAME = "ConfigurationDialog"
@@ -45,11 +46,24 @@ class ConfigurationDialog(gtk.Dialog):
         
         lblKeybinding = gtk.Label()
         lblKeybinding.set_text(TEXT_KEYBINDING)
-        self.table.attach(lblKeybinding, 0, 1, 0, 1, xoptions=False, yoptions=False)        
+        self.table.attach(lblKeybinding, 0, 1, 0, 1, xoptions=False, yoptions=False)
         
         self.__kbWidget = keybindingwidget.KeybindingWidget()
         self.__kbWidget.setKeybinding(keybinding)
         self.table.attach(self.__kbWidget, 1, 2, 0, 1, xoptions=False, yoptions=False)
+        
+        lblhxmlfile = gtk.Label()
+        lblhxmlfile.set_text(TEXT_HXMLFILE)
+        self.table.attach(lblhxmlfile,0 , 1, 1, 2, xoptions=False, yoptions=False)
+        
+        self.__fcDialog = gtk.FileChooserDialog("Select HXML file",self,gtk.FILE_CHOOSER_ACTION_OPEN,(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
+        oldFile = configuration.getHxmlFile()
+        if oldFile != None:
+        	self.__fcDialog.set_filename(oldFile)
+        self.__fcDialog.connect('response',self.__closeFC,self);
+        self.__fcWidget = gtk.FileChooserButton(self.__fcDialog)
+        
+        self.table.attach(self.__fcWidget,1 ,2 ,1 ,2 , xoptions=False, yoptions=False)
         
         # Buttons in the action area
         btnClose = gtk.Button(stock=gtk.STOCK_CLOSE)
@@ -68,6 +82,12 @@ class ConfigurationDialog(gtk.Dialog):
         self.connect('delete-event', self.close)
         
         self.show_all()
+        
+    def __closeFC(dialog,response_id,user_param1,rself):
+    	s = rself.__fcDialog.get_filename()
+    	if user_param1 == gtk.RESPONSE_OK:
+    		configuration.setHxmlFile(s)
+    	return True
     
     def __getKeybinding(self):
         return self.__keybinding
@@ -111,3 +131,4 @@ if __name__ == '__main__':
     dlg = ConfigurationDialog()
 
     gtk.main()
+
