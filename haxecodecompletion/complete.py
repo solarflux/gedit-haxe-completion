@@ -2,6 +2,7 @@
 import os
 import subprocess
 import re
+import configuration
 
 from xml.dom.minidom import parseString
 
@@ -30,13 +31,21 @@ def make_word (abbr, type):
     return word
 
 
-def get_program_output (basedir, classname, fullpath, origdoc, offset):
+def get_program_output (basedir, classname, fullpath, origdoc, offset, hxmlfile,package):
+	#check for utf-8 with written BOM
+    if ord(origdoc[0])>256:
+        offset=offset+2
     os.rename (fullpath, fullpath + ".bak")
     file = open (fullpath, "w")
     file.write (origdoc)
     file.close ()
-
-    if os.path.exists (basedir + "/compile.hxml"):
+    if hxmlfile != None:
+    	cls = classname
+        if package != None:
+            cls = package+"."+cls
+        command = ["haxe", os.path.basename(hxmlfile), cls, "--display", "%s@%d" % (fullpath[len(basedir)+1:], offset)]
+        #print ("haxe "+os.path.basename(hxmlfile)+" "+cls+" --display %s@%d" % (fullpath[len(basedir)+1:], offset))
+    elif os.path.exists (basedir + "/compile.hxml"):
         command = ["haxe", basedir + "/compile.hxml", classname , "--display", "%s@%d" % (classname.replace (".", "/") + ".hx", offset)] 
     else:
         # TODO This should be parametrable
@@ -68,6 +77,8 @@ def get_program_output (basedir, classname, fullpath, origdoc, offset):
                 dict["word"] = make_word (dict["abbr"], dict["type"])
                 result.append (dict)
         else:
+            result = []
+            result.append({"word":"Error: "+str})
             print str
     except Exception, e:
         print e
@@ -82,15 +93,18 @@ def haxe_complete (fileloc, origdoc, offset):
     complete_path = fileloc.replace ("file://", "")
     dirname = os.path.dirname (complete_path)
     filename = os.path.basename (complete_path)
-
+	
     classname = filename[:-3]
+    
+    hxmlfile = configuration.getHxmlFile()
+    if hxmlfile !=None:
+    	dirname = os.path.dirname(hxmlfile)
 
     basedir = dirname # by default
-
     if package != None:
         if dirname.endswith (package.replace (".", "/")):
             basedir = dirname[:-len(package.replace (".", "/"))] 
             classname = package + '.' + classname
 
-    return get_program_output (basedir, classname, complete_path, origdoc, offset)
+    return get_program_output (basedir, classname, complete_path, origdoc, offset, hxmlfile,package)
 

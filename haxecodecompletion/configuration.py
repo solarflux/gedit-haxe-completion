@@ -29,6 +29,7 @@ MODIFIER_CTRL = "ctrl"
 MODIFIER_ALT = "alt"
 MODIFIER_SHIFT = "shift"
 KEY = "key"
+HXML_FILE = None
 
 HAXE_EXEC_PATH = "haxe"
 
@@ -105,6 +106,14 @@ def setKeybindingComplete(keybinding):
     __client.set_string(GCONF_KEYBINDING_COMPLETE, keybinding)
     __keybindingComplete = keybinding
     __keybindingCompleteTuple = {}
+
+def getHxmlFile():
+	global HXML_FILE
+	return HXML_FILE
+	
+def setHxmlFile(newFile):
+	global HXML_FILE
+	HXML_FILE = newFile
       
 if __name__ == "__main__":
     __client.set_string(GCONF_KEYBINDING_COMPLETE, DEFAULT_KEYBINDING_COMPLETE)
@@ -115,3 +124,4 @@ if __name__ == "__main__":
     setKeybindingComplete(newKeybinding)
     print "New keybinding is:", getKeybindingComplete()
     print "New keybinding tuple is:", getKeybindingCompleteTuple()
+    HXML_FILE = None

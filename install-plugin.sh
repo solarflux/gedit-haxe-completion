@@ -15,22 +15,8 @@ else
 	TARGET="$HOME/.gnome2/gedit/plugins"
 	mkdir -p "$TARGET"
 	echo "Installation as user"
+	rm -rf ~/.gnome2/gedit/plugins/haxecodecompletion*
+	cp -Rf haxecodecompletion* ~/.gnome2/gedit/plugins
 fi
 
 echo "Installing haxe completion plugin in $TARGET"
-
-if [ `whoami` != "root" ]; then
-	echo
-	echo " !! Execute the installation as root or with sudo to install the syntax file"
-fi
-
-if [ ! -f "$LANGSPEC_DIR/$LANGSPEC_FILE" ]; then
-	echo "Installing the syntax file"
-fi
-
-if [ ! -f "$MIME_DIR/$MIME_FILE" ]; then
-	echo "Installing the mime type file"
-
-	echo "Refreshing mime-types"
-
-fi
