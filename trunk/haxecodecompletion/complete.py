@@ -59,6 +59,7 @@ def get_program_output (basedir, classname, fullpath, origdoc, offset, hxmlfile,
     if begin != -1:
         str = str[begin:]
 
+    already = set () # FIXME : haxe compiler outputs two times package names.
     result = None
     try:
         if proc.returncode == 0:
@@ -67,7 +68,10 @@ def get_program_output (basedir, classname, fullpath, origdoc, offset, hxmlfile,
             result = []
             for item in list:
                 dict = {}
-                dict["abbr"] = item.attributes["n"].value
+                val = item.attributes["n"].value
+                if val in already: continue # FIXME
+                dict["abbr"] = val
+                already.add (val) # FIXME
                 dict["type"] = ""
                 try:
                     dict["type"] = item.getElementsByTagName ('t')[0].childNodes[0].nodeValue
