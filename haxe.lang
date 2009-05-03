@@ -111,6 +111,12 @@
       <keyword>package</keyword>
     </context>
 
+    <define-regex id="preproc-start" extended="true">^\s*#\s*</define-regex>
+
+    <context id="preo-proc" style-ref="external">
+      <match extended="true">\%{preproc-start}if\b</match>
+    </context>
+
     <context id="declarations" style-ref="declaration">
       <keyword>class</keyword>
       <keyword>enum</keyword>
@@ -166,6 +172,7 @@
       <keyword>private</keyword>
       <keyword>public</keyword>
       <keyword>dynamic</keyword>
+      <keyword>override</keyword>
     </context>
 
     <context id="flow" style-ref="keyword">

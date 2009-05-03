@@ -11,12 +11,8 @@ if [ `whoami` != "root" ]; then
 	exit 1
 fi
 
-if [ ! -f "$LANGSPEC_DIR/$LANGSPEC_FILE" ]; then
-        echo "Installing the syntax file to $LANGSPEC_DIR"
-	cp "$LANGSPEC_FILE" "$LANGSPEC_DIR/$LANGSPEC_FILE"
-else
-	echo "The syntax file is already installed in $LANGSPEC_DIR/$LANGSPEC_FILE"
-fi
+echo "Installing the syntax file to $LANGSPEC_DIR"
+cp "$LANGSPEC_FILE" "$LANGSPEC_DIR/$LANGSPEC_FILE"
 
 if [ ! -f "$MIME_DIR/$MIME_FILE" ]; then
         echo "Installing the mime type file to $MIME_FILE"
