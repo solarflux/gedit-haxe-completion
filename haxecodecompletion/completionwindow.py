@@ -137,6 +137,11 @@ class CompletionWindow(gtk.Window):
                 self.plugin.on_view_key_press_event (self.gedit_window.get_active_view (), event)
                 self.gedit_window.get_active_document ().insert_at_cursor (event.string)
         # everything else !
+        elif event.keyval == gtk.keysyms.parenleft:
+            if self.complete ():
+                self.insert (" ") # This is of personal taste
+                self.plugin.on_view_key_press_event (self.gedit_window.get_active_view (), event)
+                self.gedit_window.get_active_document ().insert_at_cursor (event.string)
         else:
             if len(event.string) > 0:
                 self.temp_add (event.string)

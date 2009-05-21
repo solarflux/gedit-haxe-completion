@@ -54,16 +54,25 @@ def get_program_output (basedir, classname, fullpath, origdoc, offset, hxmlfile,
     proc = subprocess.Popen (command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=basedir)
     out = proc.communicate ()
 
-    str = out[1]
-    begin = str.find ("<list>")
+    msg = out[1]
+
+    begin = msg.find ("<type>\n")
+    if begin != -1: # This is a function type
+        end = msg.find ("\n</type>")
+        msg = msg [begin + len ("<type>\n") :end]
+        msg = msg.replace ("&gt;", ">")
+        os.rename (fullpath + ".bak", fullpath)
+        return make_word ("", msg)
+
+    begin = msg.find ("<list>")
     if begin != -1:
-        str = str[begin:]
+        msg = msg[begin:]
 
     already = set () # FIXME : haxe compiler outputs two times package names.
     result = None
     try:
         if proc.returncode == 0:
-            xmldom = parseString (str)
+            xmldom = parseString (msg)
             list = xmldom.getElementsByTagName ('i')
             result = []
             for item in list:
@@ -81,12 +90,10 @@ def get_program_output (basedir, classname, fullpath, origdoc, offset, hxmlfile,
                 dict["word"] = make_word (dict["abbr"], dict["type"])
                 result.append (dict)
         else:
-            result = []
-            result.append({"word":"Error: "+str})
-            print str
+            result = "Error : " + msg
     except Exception, e:
         print e
-        print str
+        print msg
 
     os.rename (fullpath + ".bak", fullpath)
 

@@ -123,11 +123,14 @@ class CompletionPlugin(gedit.Plugin):
         if incomplete.isdigit ():
             return self.cancel ()
 
-        if event.keyval == gtk.keysyms.period:
+        if event.keyval == gtk.keysyms.period or event.keyval == gtk.keysyms.parenleft:
+            char = "."
+            if event.keyval == gtk.keysyms.parenleft:
+                char = "("
             # If we complete with the dot key, gedit won't have inserted it prior to calling
             # this function, which is why we add the dot manually
             offset = insert.get_offset ()
-            text = text[:offset] + '.' + text[offset:]
+            text = text[:offset] + char + text[offset:]
             if text[offset - 1] == '.': # We don't want to complete something we KNOW is incorrect.
                 # This is just to avoid waiting when doing the ... operator.
                 return self.cancel ()
@@ -142,6 +145,12 @@ class CompletionPlugin(gedit.Plugin):
         # Nothing in the completion list, so no need to do anything
         if not completes:
             return self.cancel()
+
+        if (type (completes) == type ("")): # Just a function type
+            # We reset the status bar anyway.
+            self.status.pop (self.context)
+            self.status.push (self.context, completes)
+            return self.cancel ()
 
         self.show_popup (view, completes, incomplete)
 
@@ -176,7 +185,7 @@ class CompletionPlugin(gedit.Plugin):
         #alt_ok =  not (keybinding[configuration.MODIFIER_ALT] ^ alt_pressed )
         #shift_ok = not (keybinding[configuration.MODIFIER_SHIFT] ^ shift_pressed )
 
-        if ctrl_ok and key_pressed or event.keyval == gtk.keysyms.period:
+        if ctrl_ok and key_pressed or event.keyval == gtk.keysyms.period or event.keyval == gtk.keysyms.parenleft:
             return self.display_completions(view, event)
         
         return self.cancel()
@@ -184,6 +193,8 @@ class CompletionPlugin(gedit.Plugin):
     def on_window_tab_added(self, window, tab):
         """Connect the document and view in tab."""
         self.connect_view(tab.get_view())
+        self.status = window.get_statusbar ()
+        self.context = window.get_statusbar ().get_context_id ("haxe type")
 
 
     def show_popup(self, view, completions, tempstr=""):
