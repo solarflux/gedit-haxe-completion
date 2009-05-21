@@ -61,6 +61,7 @@ def get_program_output (basedir, classname, fullpath, origdoc, offset, hxmlfile,
         end = msg.find ("\n</type>")
         msg = msg [begin + len ("<type>\n") :end]
         msg = msg.replace ("&gt;", ">")
+        msg = msg.replace ("&lt;", "<")
         os.rename (fullpath + ".bak", fullpath)
         return make_word ("", msg)
 
