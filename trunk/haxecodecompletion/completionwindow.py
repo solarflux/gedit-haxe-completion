@@ -139,7 +139,9 @@ class CompletionWindow(gtk.Window):
         # everything else !
         elif event.keyval == gtk.keysyms.parenleft:
             if self.current_completions [ self.get_selected () ]['word'].find ("(") == -1: # trying to complete with ( for something that is not a function
-                return
+                firstchar = self.current_completions [ self.get_selected () ]['word'][0]
+                if firstchar < 'A' or firstchar > 'Z': # Plus, it's not a class.
+                    return
             if self.complete ():
                 self.insert (" ") # This is of personal taste
                 self.plugin.on_view_key_press_event (self.gedit_window.get_active_view (), event)
