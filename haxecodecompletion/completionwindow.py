@@ -138,6 +138,8 @@ class CompletionWindow(gtk.Window):
                 self.gedit_window.get_active_document ().insert_at_cursor (event.string)
         # everything else !
         elif event.keyval == gtk.keysyms.parenleft:
+            if self.current_completions [ self.get_selected () ]['word'].find ("(") == -1: # trying to complete with ( for something that is not a function
+                return
             if self.complete ():
                 self.insert (" ") # This is of personal taste
                 self.plugin.on_view_key_press_event (self.gedit_window.get_active_view (), event)
@@ -145,6 +147,8 @@ class CompletionWindow(gtk.Window):
         else:
             if len(event.string) > 0:
                 self.temp_add (event.string)
+                if len (self.current_completions) == 0:
+                    self.temp_remove ()
 
 
     def complete(self, hide=True):
