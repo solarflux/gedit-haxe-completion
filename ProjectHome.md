@@ -1,0 +1,1 @@
+This plugin enables completion of haxe source code in the gedit editor.
